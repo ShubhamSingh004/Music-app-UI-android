@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,6 +43,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.musicappui.MainViewModel
 import com.example.musicappui.Screen
+import com.example.musicappui.screensInBottom
 import com.example.musicappui.screensInDrawer
 import kotlinx.coroutines.launch
 
@@ -69,6 +73,28 @@ fun MainView(paddingValues: PaddingValues) {
 
     val dialogOpen = remember {
         mutableStateOf(false)
+    }
+
+    val bottomBar: @Composable () -> Unit = {
+        if (currentScreen is Screen.DrawerScreen || currentScreen == Screen.BottomScreen.Home) {
+            BottomAppBar(Modifier.wrapContentSize()) {
+                screensInBottom.forEach { item ->
+                    BottomNavigationItem(
+                        selected = currentRoute == item.bRoute,
+                        onClick = { controller.navigate(item.bRoute) },
+                        icon = {
+                            Icon(
+                                contentDescription = item.bTitle,
+                                painter = painterResource(item.icon)
+                            )
+                        },
+                        label = { Text(item.bTitle) },
+                        selectedContentColor = Color.White,
+                        unselectedContentColor = Color.Black
+                    )
+                }
+            }
+        }
     }
 
     ModalNavigationDrawer(
@@ -116,7 +142,9 @@ fun MainView(paddingValues: PaddingValues) {
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 )
-            }
+            },
+            bottomBar = bottomBar
+
         ) { innerPadding ->
             Navigation(
                 navController = controller, viewModel = viewModel,

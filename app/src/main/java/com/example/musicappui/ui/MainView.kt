@@ -77,19 +77,30 @@ fun MainView(paddingValues: PaddingValues) {
 
     val bottomBar: @Composable () -> Unit = {
         if (currentScreen is Screen.DrawerScreen || currentScreen == Screen.BottomScreen.Home) {
-            BottomAppBar(Modifier.wrapContentSize()) {
+            BottomAppBar(
+                Modifier.wrapContentSize(),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
                 screensInBottom.forEach { item ->
+                    val isSelected = currentRoute == item.bRoute
+                    val iconColor = if (isSelected) Color.Red else Color.White
+                    val labelColor = if (isSelected) Color.Red else Color.White
                     BottomNavigationItem(
-                        selected = currentRoute == item.bRoute,
-                        onClick = { controller.navigate(item.bRoute) },
+                        selected = isSelected,
+                        onClick = {
+                            viewModel.setCurrentScreen(item)
+                            controller.navigate(item.bRoute)
+                            title.value = item.bTitle
+                        },
                         icon = {
                             Icon(
                                 contentDescription = item.bTitle,
-                                painter = painterResource(item.icon)
+                                painter = painterResource(item.icon),
+                                tint = iconColor
                             )
                         },
-                        label = { Text(item.bTitle) },
-                        selectedContentColor = Color.White,
+                        label = { Text(item.bTitle, color = labelColor) },
+                        selectedContentColor = Color.Red,
                         unselectedContentColor = Color.Black
                     )
                 }
@@ -125,7 +136,7 @@ fun MainView(paddingValues: PaddingValues) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(title.value) },
+                    title = { Text(title.value, color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch {
@@ -134,7 +145,8 @@ fun MainView(paddingValues: PaddingValues) {
                         }) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "Menu"
+                                contentDescription = title.value,
+                                tint = Color.White
                             )
                         }
                     },
@@ -199,6 +211,19 @@ fun Navigation(
         startDestination = Screen.DrawerScreen.Account.route,
         modifier = Modifier.padding(paddingValues)
     ) {
+
+        composable(Screen.BottomScreen.Home.bRoute) {
+            HomeView()
+        }
+
+        composable(Screen.BottomScreen.Browse.bRoute) {
+            // TODO
+        }
+
+        composable(Screen.BottomScreen.Library.bRoute) {
+            // TODO
+        }
+
 
         composable(Screen.DrawerScreen.Account.route) {
             AccountView()

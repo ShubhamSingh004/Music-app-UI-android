@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -74,7 +75,6 @@ fun MainView(paddingValues: PaddingValues) {
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
                 drawerContainerColor = Color.White
             ) {
                 LazyColumn {
@@ -99,7 +99,7 @@ fun MainView(paddingValues: PaddingValues) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Home") },
+                    title = { Text(title.value) },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch {
@@ -135,7 +135,7 @@ fun DrawerItem(
     item: Screen.DrawerScreen,
     onDrawerItemClicked: () -> Unit
 ) {
-    val background = if (selected) Color.DarkGray else Color.White
+    val background = if (selected) Color.LightGray else Color.White
 
     Row(
         Modifier
@@ -144,7 +144,8 @@ fun DrawerItem(
             .background(background)
             .clickable {
                 onDrawerItemClicked()
-            }
+            },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = item.icon),
@@ -172,6 +173,7 @@ fun Navigation(
     ) {
 
         composable(Screen.DrawerScreen.Account.route) {
+            AccountView()
 
         }
 
